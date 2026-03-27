@@ -104,18 +104,32 @@ Repeater fields require a `subfields` definition with columns `type`, `name`, an
 
 ## Retrieving field values in templates
 
-Fields are stored as standard WordPress post meta and can be retrieved with `get_post_meta()`:
+Fields are stored as standard WordPress post meta. To avoid key collisions between groups, all fields are **prefixed with their group slug** when saved to the database.
 
+The group slug is the group name lowercased and hyphenated — the same value used in `post_meta_get_ordered_sections()`.
+
+| Group name | Field name | Database key |
+|---|---|---|
+| `Front page` | `intro_text` | `front_page_intro_text` |
+| `About` | `about_hero` | `about_about_hero` |
+
+Use the helper function `post_meta_get()` to avoid writing the prefix manually:
+```php
+// post_meta_get( $group, $field, $post_id = null )
+$intro = post_meta_get('front page', 'intro_text');
+```
+
+Or use `get_post_meta()` directly with the full prefixed key:
 ```php
 // Scalar field
-$intro = get_post_meta(get_the_ID(), 'intro_text', true);
+$intro = get_post_meta(get_the_ID(), 'front_page_intro_text', true);
 
 // Image field (stores attachment ID)
-$image_id = get_post_meta(get_the_ID(), 'hero_image', true);
+$image_id = get_post_meta(get_the_ID(), 'front_page_hero_image', true);
 echo wp_get_attachment_image($image_id, 'full');
 
 // Repeater field (stores array of rows)
-$contacts = get_post_meta(get_the_ID(), 'contacts', true);
+$contacts = get_post_meta(get_the_ID(), 'front_page_contacts', true);
 foreach ($contacts as $contact) {
     echo esc_html($contact['name']);
     echo esc_html($contact['email']);

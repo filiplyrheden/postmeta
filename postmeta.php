@@ -76,7 +76,7 @@ if (is_admin()) :
 
         foreach ($group_fields as $field) :
           $type = $field['type'];
-          $name = $field['name'];
+          $name = $group_slug . '_' . $field['name'];
 
           if (isset($type) && isset($name)) :
             $label = isset($field['label']) ? $field['label'] : $name;
@@ -203,6 +203,7 @@ if (is_admin()) :
               'name'      => $group_field['name'],
               'type'      => $group_field['type'],
               'subfields' => $group_field['subfields'] ?? [],
+              'group_slug' => sanitize_title($post_meta_group['group']),
             ]);
           endforeach;
         endif;
@@ -235,6 +236,8 @@ if (is_admin()) :
         foreach ($post_meta_fields as $post_meta_field) :
           $name = $post_meta_field['name'];
           $type = $post_meta_field['type'];
+          $group_slug = $post_meta_field['group_slug'];
+          $prefixed_name = $group_slug . '_' . $name;
 
           if ($type === 'repeater') :
             $subfields = $post_meta_field['subfields'];
@@ -255,7 +258,7 @@ if (is_admin()) :
               endforeach;
               $data[] = $sanitized;
             endforeach;
-            update_post_meta($post_id, $name, $data);
+            update_post_meta($post_id, $prefixed_name, $data);
           elseif (array_key_exists($name, $_POST)) :
             if ($type === 'image') :
               $value = absint($_POST[$name]);
@@ -264,7 +267,7 @@ if (is_admin()) :
             else :
               $value = sanitize_text_field($_POST[$name]);
             endif;
-            update_post_meta($post_id, $name, $value);
+            update_post_meta($post_id, $prefixed_name, $value);
           endif;
         endforeach;
       }
