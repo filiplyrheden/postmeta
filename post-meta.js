@@ -35,7 +35,7 @@ jQuery(function ($) {
     e.preventDefault();
     var $btn      = $(this);
     var inputName = $btn.data('input');
-    var frame     = wp.media({ title: 'Välj bild', button: { text: 'Använd bild' }, multiple: false });
+    var frame     = wp.media({ title: 'Choose image', button: { text: 'Use image' }, multiple: false });
 
     frame.on('select', function () {
       var attachment = frame.state().get('selection').first().toJSON();
@@ -73,13 +73,13 @@ jQuery(function ($) {
       // Top-level field: ID-based
       $('#' + inputName).val('');
       $('#' + inputName + '_preview').html('');
-      $('[data-input="' + inputName + '"].post-meta-upload-image').text('Välj bild');
+      $('[data-input="' + inputName + '"].post-meta-upload-image').text('Choose image');
     } else {
       // Repeater subfield: context-based
       var $field = $btn.closest('.post-meta-image-field');
       $field.find('.post-meta-image-input').val('');
       $field.find('.post-meta-image-preview').html('');
-      $field.find('.post-meta-upload-image').text('Välj bild');
+      $field.find('.post-meta-upload-image').text('Choose image');
     }
 
     $btn.remove();
