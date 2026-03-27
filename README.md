@@ -110,7 +110,7 @@ The group slug is the group name lowercased and hyphenated — the same value us
 
 | Group name | Field name | Database key |
 |---|---|---|
-| `Front page` | `intro_text` | `front_page_intro_text` |
+| `Front page` | `intro_text` | `front-page_intro_text` |
 | `About` | `about_hero` | `about_about_hero` |
 
 Use the helper function `post_meta_get()` to avoid writing the prefix manually:
