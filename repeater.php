@@ -105,11 +105,12 @@ function render_repeater_subfield($sub, $field_name, $index, $value, $is_templat
 <?php
 }
 
-function render_repeater($post, $field)
+function render_repeater($post, $field, $meta_key = null)
 {
     $name      = $field['name'];
+    $meta_key  = $meta_key ?? $name;
     $subfields = $field['subfields'] ?? [];
-    $rows      = get_post_meta($post->ID, $name, true) ?: [];
+    $rows      = get_post_meta($post->ID, $meta_key, true) ?: [];
 ?>
     <div class="Repeater js-repeater">
 

@@ -117,7 +117,7 @@ if (is_admin()) :
               endif;
               print '</div>';
             elseif ($type == 'repeater') :
-              render_repeater($post, $field);
+              render_repeater($post, $field, $name);
             endif;
 
             print '</li>';
@@ -259,13 +259,13 @@ if (is_admin()) :
               $data[] = $sanitized;
             endforeach;
             update_post_meta($post_id, $prefixed_name, $data);
-          elseif (array_key_exists($name, $_POST)) :
+          elseif (array_key_exists($prefixed_name, $_POST)) :
             if ($type === 'image') :
-              $value = absint($_POST[$name]);
+              $value = absint($_POST[$prefixed_name]);
             elseif ($type === 'rich_text') :
-              $value = wp_kses_post($_POST[$name]);
+              $value = wp_kses_post($_POST[$prefixed_name]);
             else :
-              $value = sanitize_text_field($_POST[$name]);
+              $value = sanitize_text_field($_POST[$prefixed_name]);
             endif;
             update_post_meta($post_id, $prefixed_name, $value);
           endif;
