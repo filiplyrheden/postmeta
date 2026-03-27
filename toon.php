@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Toon format parser.
+ *
+ * Toon is a lightweight indentation-based data format used to define post meta
+ * field groups. A .toon file contains a list of items (lines starting with "- ")
+ * where each item can have key: value pairs, nested objects (key:), typed lists
+ * (key[N]:), and columnar arrays (key[N]{col1,col2}:).
+ */
+
 function parse_toon_file($filepath)
 {
   $raw = file_get_contents($filepath);

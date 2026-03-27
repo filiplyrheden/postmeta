@@ -9,9 +9,10 @@ require __DIR__ . '/repeater.php';
 require __DIR__ . '/toon.php';
 
 /**
- * Returns sections in saved order, filtered to only known keys.
+ * Returns field names in saved order, filtered to only known keys.
+ * Used by theme templates to retrieve fields in their user-defined order.
  *
- * @param array  $section_map  Map of field_name => template path
+ * @param array  $section_map  Map of field_name => anything (only keys are used)
  * @param string $group_slug   The group slug used when saving the order
  * @return array
  */
@@ -88,12 +89,12 @@ if (is_admin()) :
             if ($sortable) :
               print '<span class="post-meta-drag-handle dashicons dashicons-menu" title="Drag and drop to change order of sections"></span>';
             endif;
-            print '<p class="post-attributes-label-wrapper page-template-label-wrapper"><label for="' . $name . '"><strong>' . $label . '</strong></label></p>';
+            print '<p class="post-attributes-label-wrapper page-template-label-wrapper"><label for="' . esc_attr($name) . '"><strong>' . esc_html($label) . '</strong></label></p>';
 
             if ($type == 'text' || $type == 'email' || $type == 'url') :
-              print '<input type="' . $type . '" placeholder="' . $placeholder . '" name="' . $name . '" id="' . $name . '" value="' . $field_data . '" class="large-text" />';
+              print '<input type="' . esc_attr($type) . '" placeholder="' . esc_attr($placeholder) . '" name="' . esc_attr($name) . '" id="' . esc_attr($name) . '" value="' . esc_attr($field_data) . '" class="large-text" />';
             elseif ($type == 'textarea') :
-              print '<textarea placeholder="' . $placeholder . '" name="' . $name . '" id="' . $name . '" class="large-text" rows="' . $rows . '">' . $field_data . '</textarea></p>';
+              print '<textarea placeholder="' . esc_attr($placeholder) . '" name="' . esc_attr($name) . '" id="' . esc_attr($name) . '" class="large-text" rows="' . (int) $rows . '">' . esc_textarea($field_data) . '</textarea></p>';
             elseif ($type == 'rich_text') :
               $editor_id = sanitize_key($name);
               wp_editor($field_data, $editor_id, [
@@ -110,9 +111,9 @@ if (is_admin()) :
                 print '<img src="' . esc_url($image_src) . '" style="max-width:150px;display:block;" />';
               endif;
               print '</div>';
-              print '<button type="button" class="button post-meta-upload-image" data-input="' . esc_attr($name) . '">' . ($image_src ? __('Change image') : __('Choose image')) . '</button>';
+              print '<button type="button" class="button post-meta-upload-image" data-input="' . esc_attr($name) . '">' . ($image_src ? __('Change image', 'postmeta') : __('Choose image', 'postmeta')) . '</button>';
               if ($image_src) :
-                print ' <button type="button" class="button post-meta-remove-image" data-input="' . esc_attr($name) . '">' . __('Remove') . '</button>';
+                print ' <button type="button" class="button post-meta-remove-image" data-input="' . esc_attr($name) . '">' . __('Remove', 'postmeta') . '</button>';
               endif;
               print '</div>';
             elseif ($type == 'repeater') :
@@ -138,9 +139,9 @@ if (is_admin()) :
 
       if (is_array($post_meta_model) && !empty($post_meta_model)) :
 
-        foreach ($post_meta_model as $post_meta_group) :
+        global $post;
 
-          global $post;
+        foreach ($post_meta_model as $post_meta_group) :
 
           $group_label = trim($post_meta_group['group']);
           $group_id = "post_meta_group_" . sanitize_title($group_label);
@@ -218,6 +219,9 @@ if (is_admin()) :
       function post_meta_save_data($post_id)
       {
         global $post_meta_fields;
+
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+        if (!current_user_can('edit_post', $post_id)) return;
 
         // Save field order per group
         if (isset($_POST['post_meta_order']) && is_array($_POST['post_meta_order'])) :
