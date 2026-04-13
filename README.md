@@ -57,8 +57,11 @@ Field groups are defined in `{theme}/postmeta/post-meta.toon`. The file starts w
 | `url` | URL input |
 | `textarea` | Multi-line text area |
 | `rich_text` | WordPress TinyMCE editor |
+| `tinymce` | Alias for `rich_text` — identical behaviour |
 | `image` | Image picker (stores attachment ID) |
 | `repeater` | Repeatable group of subfields |
+
+`rich_text` and `tinymce` are interchangeable. Both render the full WordPress visual editor (TinyMCE) and save content through `wp_kses_post`. Use whichever name reads more clearly in your `.toon` file.
 
 Repeater fields require a `subfields` definition with columns `type`, `name`, and `label`.
 
@@ -78,7 +81,7 @@ Repeater fields require a `subfields` definition with columns `type`, `name`, an
         name: hero_image
         label: Hero image
       -
-        type: rich_text
+        type: tinymce
         name: intro_text
         label: Intro text
       -
@@ -123,6 +126,10 @@ Or use `get_post_meta()` directly with the full prefixed key:
 ```php
 // Scalar field
 $intro = get_post_meta(get_the_ID(), 'front_page_intro_text', true);
+
+// rich_text / tinymce field (HTML content — echo without escaping)
+$body = get_post_meta(get_the_ID(), 'front_page_intro_text', true);
+echo wp_kses_post($body);
 
 // Image field (stores attachment ID)
 $image_id = get_post_meta(get_the_ID(), 'front_page_hero_image', true);

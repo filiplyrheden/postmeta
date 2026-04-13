@@ -109,7 +109,7 @@ if (is_admin()) :
               print '<input type="' . esc_attr($type) . '" placeholder="' . esc_attr($placeholder) . '" name="' . esc_attr($name) . '" id="' . esc_attr($name) . '" value="' . esc_attr($field_data) . '" class="large-text" />';
             elseif ($type == 'textarea') :
               print '<textarea placeholder="' . esc_attr($placeholder) . '" name="' . esc_attr($name) . '" id="' . esc_attr($name) . '" class="large-text" rows="' . (int) $rows . '">' . esc_textarea($field_data) . '</textarea></p>';
-            elseif ($type == 'rich_text') :
+            elseif ($type == 'rich_text' || $type == 'tinymce') :
               $editor_id = sanitize_key($name);
               wp_editor($field_data, $editor_id, [
                 'textarea_name' => $name,
@@ -276,7 +276,7 @@ if (is_admin()) :
           elseif (array_key_exists($prefixed_name, $_POST)) :
             if ($type === 'image') :
               $value = absint($_POST[$prefixed_name]);
-            elseif ($type === 'rich_text') :
+            elseif ($type === 'rich_text' || $type === 'tinymce') :
               $value = wp_kses_post($_POST[$prefixed_name]);
             else :
               $value = sanitize_text_field($_POST[$prefixed_name]);

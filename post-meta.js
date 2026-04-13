@@ -18,6 +18,20 @@ jQuery(function ($) {
       handle: '.post-meta-drag-handle',
       items: '> .post-meta-field-row',
       placeholder: 'post-meta-sortable-placeholder',
+      start: function () {
+        $list.find('.wp-editor-area').each(function () {
+          var editor = tinymce && tinymce.get(this.id);
+          if (editor) editor.remove();
+        });
+      },
+      stop: function () {
+        $list.find('.wp-editor-area').each(function () {
+          var id = this.id;
+          if (typeof tinyMCEPreInit !== 'undefined' && tinyMCEPreInit.mceInit[id]) {
+            tinymce.init(tinyMCEPreInit.mceInit[id]);
+          }
+        });
+      },
       update: function () {
         updateOrder();
       }
