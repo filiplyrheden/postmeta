@@ -78,6 +78,47 @@ function toon_parse_list(&$lines, &$pos, $len, $min_indent)
   return $result;
 }
 
+function toon_parse_csv_row($line)
+{
+  $fields = [];
+  $len    = strlen($line);
+  $i      = 0;
+
+  while ($i < $len) {
+    if ($line[$i] === '"') {
+      // Quoted field — find closing quote
+      $i++;
+      $field = '';
+      while ($i < $len) {
+        if ($line[$i] === '"' && isset($line[$i + 1]) && $line[$i + 1] === '"') {
+          $field .= '"';
+          $i += 2;
+        } elseif ($line[$i] === '"') {
+          $i++;
+          break;
+        } else {
+          $field .= $line[$i++];
+        }
+      }
+      $fields[] = $field;
+      if ($i < $len && $line[$i] === ',') {
+        $i++;
+      }
+    } else {
+      // Unquoted field — read until next comma
+      $end = strpos($line, ',', $i);
+      if ($end === false) {
+        $fields[] = substr($line, $i);
+        break;
+      }
+      $fields[] = substr($line, $i, $end - $i);
+      $i        = $end + 1;
+    }
+  }
+
+  return $fields;
+}
+
 function toon_parse_kv($line, &$lines, &$pos, $len, $children_indent, $obj)
 {
   // Columnar array: key[N]{col1,col2,...}:
@@ -91,7 +132,7 @@ function toon_parse_kv($line, &$lines, &$pos, $len, $children_indent, $obj)
       toon_skip_empty($lines, $pos, $len);
       if ($pos >= $len) break;
       $row_line = trim($lines[$pos++]);
-      $values   = array_map('trim', explode(',', $row_line, count($cols)));
+      $values   = toon_parse_csv_row($row_line);
       $row      = [];
       foreach ($cols as $ci => $col) {
         $row[$col] = $values[$ci] ?? '';
