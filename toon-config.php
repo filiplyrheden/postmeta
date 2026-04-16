@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Toon Config
  * Description: Define custom post meta fields and custom post types via .toon config files in your theme.
- * Version: 1.1.0
+ * Version: 1.1.1
  */
 
 require __DIR__ . '/repeater.php';

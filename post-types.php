@@ -94,43 +94,5 @@ function post_types_register_from_toon()
  */
 function post_types_parse_csv_row($line)
 {
-  $fields = [];
-  $len    = strlen($line);
-  $i      = 0;
-
-  while ($i < $len) {
-    if ($line[$i] === '"') {
-      // Quoted field — find closing quote
-      $i++;
-      $field = '';
-      while ($i < $len) {
-        if ($line[$i] === '"' && isset($line[$i + 1]) && $line[$i + 1] === '"') {
-          // Escaped quote
-          $field .= '"';
-          $i += 2;
-        } elseif ($line[$i] === '"') {
-          $i++;
-          break;
-        } else {
-          $field .= $line[$i++];
-        }
-      }
-      $fields[] = $field;
-      // Skip the comma separator if present
-      if ($i < $len && $line[$i] === ',') {
-        $i++;
-      }
-    } else {
-      // Unquoted field — read until next comma
-      $end   = strpos($line, ',', $i);
-      if ($end === false) {
-        $fields[] = substr($line, $i);
-        break;
-      }
-      $fields[] = substr($line, $i, $end - $i);
-      $i        = $end + 1;
-    }
-  }
-
-  return $fields;
+  return toon_parse_csv_row($line);
 }
