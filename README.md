@@ -200,9 +200,35 @@ Field groups are defined in `{theme}/postmeta/post-meta.toon`. The file starts w
 | `tinymce` | Alias for `rich_text` — identical behaviour |
 | `image` | Image picker (stores attachment ID) |
 | `button` | Two inputs — a label and a URL — stored as an associative array |
+| `select` | Dropdown with predefined options (stores the selected value) |
 | `repeater` | Repeatable group of subfields |
 
 `rich_text` and `tinymce` are interchangeable. Both render the full WordPress visual editor and save content through `wp_kses_post`. Use whichever name reads more clearly in your `.toon` file.
+
+Select fields require an `options` definition with columns `value` and `label`. `value` is what gets stored in the database; `label` is what the editor sees in the dropdown. Only values declared in `options` can be saved — anything else is rejected on save.
+
+```
+- type: select
+  name: logo
+  label: Logotyp
+  options[8]{value,label}:
+    acme, ACME Corp
+    globex, Globex
+    initech, Initech
+    umbrella, Umbrella Corp
+    wayne, Wayne Enterprises
+    stark, Stark Industries
+    oscorp, OsCorp
+    cyberdyne, Cyberdyne Systems
+```
+
+Option labels that contain a comma must be wrapped in double-quotes:
+
+```
+options[2]{value,label}:
+  classic, Classic
+  "bold,italic", Bold & Italic
+```
 
 Repeater fields require a `subfields` definition with columns `type`, `name`, and `label`.
 
@@ -216,7 +242,7 @@ Repeater fields require a `subfields` definition with columns `type`, `name`, an
     location:
       screens[1]: page
       front_page: 1
-    fields[4]:
+    fields[5]:
       -
         type: image
         name: hero_image
@@ -229,6 +255,14 @@ Repeater fields require a `subfields` definition with columns `type`, `name`, an
         type: button
         name: cta_button
         label: Call to action
+      -
+        type: select
+        name: partner_logo
+        label: Partner logo
+        options[3]{value,label}:
+          acme, ACME Corp
+          globex, Globex
+          initech, Initech
       -
         type: repeater
         name: contacts
@@ -316,5 +350,11 @@ if (!empty($btn['url'])) {
         esc_url($btn['url']),
         esc_html($btn['label'])
     );
+}
+
+// Select field (stores the selected value string)
+$logo = get_post_meta(get_the_ID(), 'front-page_partner_logo', true);
+if ($logo) {
+    get_template_part('partials/logos/' . $logo);
 }
 ```

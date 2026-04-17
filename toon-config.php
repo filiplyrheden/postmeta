@@ -161,6 +161,16 @@ if (is_admin()) :
                   print ' <button type="button" class="button post-meta-remove-image" data-input="' . esc_attr($name) . '">' . __('Remove', 'toon-config') . '</button>';
                 endif;
                 print '</div>';
+              elseif ($type == 'select') :
+                $options = isset($field['options']) && is_array($field['options']) ? $field['options'] : [];
+                print '<select name="' . esc_attr($name) . '" id="' . esc_attr($name) . '">';
+                print '<option value="">' . esc_html__('— Select —', 'toon-config') . '</option>';
+                foreach ($options as $opt) :
+                  $opt_value = esc_attr($opt['value'] ?? '');
+                  $opt_label = esc_html($opt['label'] ?? $opt_value);
+                  print '<option value="' . $opt_value . '"' . selected($field_data, $opt['value'] ?? '', false) . '>' . $opt_label . '</option>';
+                endforeach;
+                print '</select>';
               elseif ($type == 'repeater') :
                 render_repeater($post, $field, $name);
               endif;
@@ -318,6 +328,11 @@ if (is_admin()) :
                 'label' => sanitize_text_field($raw['label'] ?? ''),
                 'url'   => esc_url_raw($raw['url'] ?? ''),
               ];
+              update_post_meta($post_id, $prefixed_name, $value);
+            elseif ($type === 'select') :
+              $allowed  = array_column($post_meta_field['options'] ?? [], 'value');
+              $raw_val  = sanitize_text_field($_POST[$prefixed_name] ?? '');
+              $value    = in_array($raw_val, $allowed, true) ? $raw_val : '';
               update_post_meta($post_id, $prefixed_name, $value);
             elseif (array_key_exists($prefixed_name, $_POST)) :
               if ($type === 'image') :
