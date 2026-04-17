@@ -263,7 +263,7 @@ if (is_admin()) :
               'name'       => $group_field['name'],
               'type'       => $group_field['type'],
               'subfields'  => $group_field['subfields'] ?? [],
-              'options'    => $group_field['options'] ?? [],   // ← lägg till denna
+              'options'    => $group_field['options'] ?? [],
               'group_slug' => sanitize_title($post_meta_group['group']),
             ]);
           endforeach;
